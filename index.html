@@ -30,12 +30,17 @@
 			xhr.open('GET','http://localhost:3001/getMsg', true)
 			xhr.onload = function() {
 				console.log(this.responseText)
-				let p = document.createElement('p')
-				p.innerText = this.responseText
-				box.appendChild(p)
+				appendMsg(this.responseText)
 				checkMessage()
 			}
+			xhr.timeout = 10000000
 			xhr.send()
+		}
+
+		function appendMsg(str) {
+			let p = document.createElement('p')
+			p.innerText = str
+			box.appendChild(p)
 		}
 		checkMessage()
 

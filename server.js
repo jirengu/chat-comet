@@ -3,27 +3,20 @@ let url = require('url')
 let fs = require('fs')
 
 let reqQueue = []
+console.log('create server listen 3001')
 http.createServer((req, res)=>{
   var pathObj = url.parse(req.url, true)
-	if(pathObj.pathname === '/') {
-	  fs.readFile(__dirname + '/index.html', function(err, data){
-      res.writeHead(200)
-      res.end(data)
-	  })
-	} else if(pathObj.pathname === '/send'){
+	if(pathObj.pathname === '/send'){
 		console.log(pathObj.query.msg)
-    broadCast(pathObj.query.msg)
-    res.end('ok')
+		res.end('ok')
+		while(reqQueue.length > 0) {
+			reqQueue.shift().end(pathObj.query.msg)
+		}
   } else if(pathObj.pathname === '/getMsg') {
-  	reqQueue.push(res)
-  }
+		reqQueue.push(res)
+  } else {
+	  fs.readFile(__dirname + '/index.html', function(err, data){
+			res.end(data)
+		})
+	} 
 }).listen(3001)
-
-function broadCast(msg) {
-	console.log('broadCast')
-	reqQueue.forEach(res=>{
-		console.log(msg)
-		res.end(msg)
-	})
-	reqQueue = []
-}
